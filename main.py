@@ -23,6 +23,7 @@ def login():
         'Accept-Language': 'en-US,en;q=0.8',
         'Connection': 'keep-alive',
         'Content-Length': '0',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
         'Host': 'www.instagram.com',
         'Origin': 'https://www.instagram.com',
         'Referer': 'https://www.instagram.com/',
@@ -114,7 +115,7 @@ def get_followers_list():
     followers_post['variables'] = json.dumps(followers_post['variables'])
     response = session.post(query_route, data=followers_post)
     response = json.loads(response.text)
-
+    import pdb; pdb.set_trace()
     for edge in response['data']['user']['edge_followed_by']['edges']:
         followers_list.append(edge['node'])
 

@@ -113,9 +113,9 @@ def get_followers_list():
         }
     }
     followers_post['variables'] = json.dumps(followers_post['variables'])
-    response = session.post(query_route, data=followers_post)
+    session.headers.update({'Content-Type': 'application/json'})
+    response = session.post(query_route, data=json.dumps(followers_post))
     response = json.loads(response.text)
-    import pdb; pdb.set_trace()
     for edge in response['data']['user']['edge_followed_by']['edges']:
         followers_list.append(edge['node'])
 
@@ -131,7 +131,7 @@ def get_followers_list():
             }
         }
         followers_post['variables'] = json.dumps(followers_post['variables'])
-        response = session.post(query_route, data=followers_post)
+        response = session.post(query_route, data=json.dumps(followers_post))
         response = json.loads(response.text)
 
         for edge in response['data']['user']['edge_followed_by']['edges']:

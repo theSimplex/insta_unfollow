@@ -95,7 +95,8 @@ def get_follows_list():
             }
         }
         follows_post['variables'] = json.dumps(follows_post['variables'])
-        response = session.post(query_route, data=follows_post)
+        session.headers.update({'Content-Type': 'application/json'})
+        response = session.post(query_route, data=json.dumps(follows_post))
         response = json.loads(response.text)
 
         for edge in response['data']['user']['edge_follow']['edges']:

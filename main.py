@@ -76,7 +76,8 @@ def get_follows_list():
         }
     }
     follows_post['variables'] = json.dumps(follows_post['variables'])
-    response = session.post(query_route, data=follows_post)
+    session.headers.update({'Content-Type': 'application/json'})
+    response = session.post(query_route, data=json.dumps(follows_post))
     response = json.loads(response.text)
 
     for edge in response['data']['user']['edge_follow']['edges']:
@@ -159,7 +160,7 @@ def logout():
     return False
 
 
-def main():
+def main(unfollow_all=True):
     if not os.environ.get('USERNAME') or not os.environ.get('PASSWORD'):
         sys.exit('please provide USERNAME and PASSWORD environement variables. Abording...')
 
@@ -175,14 +176,17 @@ def main():
 
     time.sleep(random.randint(2, 6))
 
-    followers_list = get_followers_list()
-    print('found {} followers'.format(len(followers_list)))
-
     follows_list = get_follows_list()
     print('found {} following'.format(len(follows_list)))
 
-    unfollow_users_list = [user for user in follows_list if user not in followers_list]
-    print('you are following {} user(s) who aren\'t following you.'.format(len(unfollow_users_list)))
+    if not unfollow_all:
+        followers_list = get_followers_list()
+        print('found {} followers'.format(len(followers_list)))
+
+        unfollow_users_list = [user for user in follows_list if user not in followers_list]
+        print('you are following {} user(s) who aren\'t following you.'.format(len(unfollow_users_list)))
+    else:
+        unfollow_users_list = follows_list
 
     if len(unfollow_users_list) > 0:
         print('Begin to unfollow users...')

@@ -104,6 +104,25 @@ def get_follows_list():
 
     return follows_list
 
+def get_first_page_and_unfollow():
+    follows_list = []
+
+    follows_post = {
+        'query_id': 17874545323001329,
+        'variables': {
+            'id': session.cookies['ds_user_id'],
+            'first': 20
+        }
+    }
+    follows_post['variables'] = json.dumps(follows_post['variables'])
+    session.headers.update({'Content-Type': 'application/json'})
+    response = session.post(query_route, data=json.dumps(follows_post))
+    response = json.loads(response.text)
+
+    for edge in response['data']['user']['edge_follow']['edges']:
+        follows_list.append(edge['node'])
+    
+
 def get_followers_list():
     followers_list = []
 

@@ -56,7 +56,7 @@ def login():
         session.headers.update({
             'X-CSRFToken': reponse.cookies['csrftoken']
         })
-
+    print(reponse_data)
     return reponse_data['authenticated']
 
 def unfollow(user):
@@ -84,8 +84,13 @@ def logout():
 # Not so useful, it's just to simulate human actions better
 def get_user_profile(username):
     response = session.get(profile_route % (instagram_url, username))
-    response = json.loads(response.text)
-    return response['graphql']['user']
+    try:
+        response = json.loads(response.text)
+        return response['graphql']['user']
+    except:
+        print(response.text)
+        return False
+
 
 
 def get_first_page_follows():
@@ -111,15 +116,16 @@ def main(unfollow_all=True):
     if not os.environ.get('USERNAME') or not os.environ.get('PASSWORD'):
         sys.exit('please provide USERNAME and PASSWORD environement variables. Abording...')
     while True:
-        is_logged = login()
-        if is_logged == False:
+        if not login():
             sys.exit('login failed, verify user/password combination')
 
         print('You\'re now logged as {}'.format(os.environ.get('USERNAME')))
 
-        time.sleep(random.randint(1, 3))
+        # time.sleep(random.randint(1, 3))
 
-        get_user_profile(os.environ.get('USERNAME'))
+        # if not get_user_profile(os.environ.get('USERNAME')):
+        #     time.sleep(1800)
+        #     continue
 
         time.sleep(random.randint(2, 6))
 

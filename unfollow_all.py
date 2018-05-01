@@ -111,6 +111,45 @@ def get_first_page_follows():
     for edge in response['data']['user']['edge_follow']['edges']:
         follows_list.append(edge['node'])
     return follows_list
+    
+def get_follows_list():
+    follows_list = []
+
+    follows_post = {
+        'query_id': 17874545323001329,
+        'variables': {
+            'id': session.cookies['ds_user_id'],
+            'first': 20
+        }
+    }
+    follows_post['variables'] = json.dumps(follows_post['variables'])
+    session.headers.update({'Content-Type': 'application/json'})
+    response = session.post(query_route, data=json.dumps(follows_post))
+    response = json.loads(response.text)
+
+    for edge in response['data']['user']['edge_follow']['edges']:
+        follows_list.append(edge['node'])
+
+    while response['data']['user']['edge_follow']['page_info']['has_next_page']:
+        time.sleep(random.randint(5, 15))
+
+        follows_post = {
+            'query_id': 17874545323001329,
+            'variables': {
+                'id': session.cookies['ds_user_id'],
+                'first': 10,
+                'after': response['data']['user']['edge_follow']['page_info']['end_cursor']
+            }
+        }
+        follows_post['variables'] = json.dumps(follows_post['variables'])
+        session.headers.update({'Content-Type': 'application/json'})
+        response = session.post(query_route, data=json.dumps(follows_post))
+        response = json.loads(response.text)
+
+        for edge in response['data']['user']['edge_follow']['edges']:
+            follows_list.append(edge['node'])
+
+    return follows_list
 
 def main(unfollow_all=True):
     if not os.environ.get('USERNAME') or not os.environ.get('PASSWORD'):
@@ -129,7 +168,7 @@ def main(unfollow_all=True):
 
         time.sleep(random.randint(2, 6))
 
-        follows_list = get_first_page_follows()
+        follows_list = get_follows_list()
 
         if len(follows_list) > 0:
             print('Begin to unfollow {} users...'.format(len(follows_list)))
@@ -137,7 +176,7 @@ def main(unfollow_all=True):
             for user in follows_list:
                 print('unfollowing {}'.format(user['username']))
                 unfollow(user)
-                time.sleep(random.randint(5, 10) * len(follows_list))
+                time.sleep(random.randint(5, 7  ) * len(follows_list))
         else:
             is_logged_out = logout()
             if is_logged_out:

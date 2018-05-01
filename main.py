@@ -62,8 +62,12 @@ def login():
 # Not so useful, it's just to simulate human actions better
 def get_user_profile(username):
     response = session.get(profile_route % (instagram_url, username))
-    response = json.loads(response.text)
-    return response['graphql']['user']
+    try:
+        response = json.loads(response.text)
+        return response['graphql']['user']
+    except:
+        print(response.text)
+        return False
 
 def get_follows_list():
     follows_list = []

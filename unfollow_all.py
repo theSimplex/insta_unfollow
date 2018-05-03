@@ -176,7 +176,7 @@ def main(unfollow_all=True):
             for user in follows_list:
                 print('unfollowing {}'.format(user['username']))
                 unfollow(user)
-                time.sleep(random.randint(5, 7  ) * len(follows_list))
+                time.sleep(random.randint(30, 180))
         else:
             is_logged_out = logout()
             if is_logged_out:
